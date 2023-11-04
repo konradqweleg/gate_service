@@ -19,4 +19,10 @@ public class LogInService implements LogInUseCase {
     public Mono<ResponseEntity<String>> login(Mono<LoginAndPasswordData> loginAndPasswordData) {
         return logInServicePort.isCorrectCredentials(loginAndPasswordData);
     }
+
+
+
+
+
+
 }
