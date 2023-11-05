@@ -10,6 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class Tokenizer {
@@ -23,7 +24,7 @@ public class Tokenizer {
     @Value("${app.token.expires-minute}")
     private int expires;
 
-    public String tokenize(String userId) {
+    public String tokenize(String userEmail) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, expires);
         Date expiresAt = calendar.getTime();
@@ -31,8 +32,8 @@ public class Tokenizer {
         return JWT.create()
 
                 .withIssuer(issuer)
-
-                .withClaim("principal", userId)
+                .withClaim("TYPE_TOKEN","ACCESS_TOKEN")
+                .withClaim("principal", userEmail)
 
                 .withClaim("role", "USER")
 
@@ -48,6 +49,46 @@ public class Tokenizer {
         } catch (Exception e) {
             return Mono.empty();
         }
+    }
+
+    public Optional<DecodedJWT> verifyBlocked(String token) {
+        try {
+           // Algorithm algorithm = Algorithm.HMAC256(secret);
+            JWTVerifier verifier = JWT.require(algorithm()).withIssuer(issuer).build();
+            return Optional.of(verifier.verify(token));
+         //   return Optional.of( verifier.verify(token));
+        } catch (Exception e) {
+            System.out.println(e);
+            return Optional.empty();
+        }
+    }
+
+    public String generateRefreshToken(String userId) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, 100);
+        Date expiresAt = calendar.getTime();
+
+        return JWT.create()
+                .withSubject(userId)
+                .withIssuer(issuer)
+                .withClaim("role", "USER")
+                .withClaim("TYPE_TOKEN","REFRESH_TOKEN")
+                .withExpiresAt(expiresAt)
+                .sign(Algorithm.HMAC256(secret));
+    }
+
+    public String refreshAccessToken(String refreshToken) {
+        DecodedJWT decodedRefreshToken = JWT.require(Algorithm.HMAC256(secret))
+                .withIssuer(issuer)
+                .build()
+                .verify(refreshToken);
+
+
+
+        String userEmail = decodedRefreshToken.getSubject();
+
+        return tokenize(userEmail);
     }
 
     private Algorithm algorithm() {

@@ -2,6 +2,7 @@ package com.example.gate_mychat_server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,10 +11,10 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @EnableWebFluxSecurity
 @Configuration
-
+@EnableReactiveMethodSecurity
 public class SecurityConfig {
 
-    private static final String[] PUBLIC = {"/", "/favicon.ico", "/actuator/health", "/anonymous/login", "/anonymous/register","/login"};
+    private static final String[] PUBLIC = {"/api/login"};
 
     private final TokenSecurityContextRepository securityContextRepository;
 

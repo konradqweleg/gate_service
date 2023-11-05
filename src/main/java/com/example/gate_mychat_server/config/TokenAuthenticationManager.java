@@ -16,7 +16,6 @@ import java.util.function.Function;
 public class TokenAuthenticationManager implements ReactiveAuthenticationManager {
 
     private final Tokenizer tokenizer;
-
     public TokenAuthenticationManager(Tokenizer tokenizer) {
         this.tokenizer = tokenizer;
     }
@@ -31,8 +30,12 @@ public class TokenAuthenticationManager implements ReactiveAuthenticationManager
 
                 .flatMap((Function<DecodedJWT, Mono<UsernamePasswordAuthenticationToken>>) decodedJWT -> {
                     String userId = decodedJWT.getClaim("principal").asString();
+
                     String role = decodedJWT.getClaim("role").asString();
-                    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+                    String kindOfToken = decodedJWT.getClaim("TYPE_TOKEN").asString();
+
+
+                    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role),new SimpleGrantedAuthority(kindOfToken));
                     return Mono.just(new UsernamePasswordAuthenticationToken(userId, null, authorities));
                 });
     }
