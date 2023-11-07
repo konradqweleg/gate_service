@@ -1,13 +1,20 @@
 package com.example.gate_mychat_server.services;
 
 import com.example.gate_mychat_server.config.Tokenizer;
+import com.example.gate_mychat_server.model.Role;
+import com.example.gate_mychat_server.model.TypeToken;
 import com.example.gate_mychat_server.model.request.LoginAndPasswordData;
 import com.example.gate_mychat_server.model.response.LoginResponse;
+import com.example.gate_mychat_server.model.response.RefreshToken;
 import com.example.gate_mychat_server.model.util.Result;
 import com.example.gate_mychat_server.port.in.AuthenticationUseCase;
 import com.example.gate_mychat_server.port.out.AuthenticationPort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 public class AuthenticationService implements AuthenticationUseCase {
@@ -32,8 +39,8 @@ public class AuthenticationService implements AuthenticationUseCase {
                 flatMap(correctCredentialsResult -> cacheLoginAndPassword).
                 flatMap(
                         loginAndPasswordAuthorizedUser -> {
-                            String token = tokenizer.tokenize(loginAndPasswordAuthorizedUser.login());
-                            String refreshToken = tokenizer.generateRefreshToken(loginAndPasswordAuthorizedUser.login());
+                            String token = tokenizer.createAccessToken(loginAndPasswordAuthorizedUser.login(),Role.USER, TypeToken.ACCESS);
+                            String refreshToken = tokenizer.generateRefreshToken(loginAndPasswordAuthorizedUser.login(),Role.USER);
                             LoginResponse loginResponse = new LoginResponse(token, refreshToken);
                             return Mono.just(Result.<LoginResponse>success(loginResponse));
                         }
@@ -42,6 +49,14 @@ public class AuthenticationService implements AuthenticationUseCase {
                         response -> Mono.just(Result.<LoginResponse>error(ERROR)));
 
     }
+
+    @Override
+    public Mono<Result<RefreshToken>> refreshAccessToken(String userEmail,Role role) {
+        String generatedAccessToken = tokenizer.createAccessToken(userEmail,role,TypeToken.ACCESS);
+        return Mono.just(Result.success(new RefreshToken(generatedAccessToken)));
+
+    }
+
 
 
 }

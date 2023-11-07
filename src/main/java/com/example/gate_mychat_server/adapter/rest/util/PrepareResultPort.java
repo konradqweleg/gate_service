@@ -6,5 +6,5 @@ import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Mono;
 
 public interface PrepareResultPort {
-    public <T> Mono<ResponseEntity<String>> convert (Result<T> response);
+     <T> Mono<ResponseEntity<String>> convert (Result<T> response);
 }

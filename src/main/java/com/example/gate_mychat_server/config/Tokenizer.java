@@ -4,13 +4,14 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.gate_mychat_server.model.Role;
+import com.example.gate_mychat_server.model.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Optional;
 
 @Component
 public class Tokenizer {
@@ -22,23 +23,22 @@ public class Tokenizer {
     private String issuer;
 
     @Value("${app.token.expires-minute}")
-    private int expires;
+    private int expiresAccessTokenInMinutes;
 
-    public String tokenize(String userEmail) {
+    @Value("60")
+    private int expiresRefreshTokenInMinutes;
+
+    public String createAccessToken(String userEmail, Role role, TypeToken typeToken) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, expires);
+        calendar.add(Calendar.MINUTE, expiresAccessTokenInMinutes);
         Date expiresAt = calendar.getTime();
 
         return JWT.create()
-
                 .withIssuer(issuer)
-                .withClaim("TYPE_TOKEN","ACCESS_TOKEN")
-                .withClaim("principal", userEmail)
-
-                .withClaim("role", "USER")
-
+                .withClaim("typeToken",typeToken.getNameTypeToken())
+                .withClaim("userEmail", userEmail)
+                .withClaim("role", role.getNameRole())
                 .withExpiresAt(expiresAt)
-
                 .sign(algorithm());
     }
 
@@ -51,44 +51,26 @@ public class Tokenizer {
         }
     }
 
-    public Optional<DecodedJWT> verifyBlocked(String token) {
-        try {
-           // Algorithm algorithm = Algorithm.HMAC256(secret);
-            JWTVerifier verifier = JWT.require(algorithm()).withIssuer(issuer).build();
-            return Optional.of(verifier.verify(token));
-         //   return Optional.of( verifier.verify(token));
-        } catch (Exception e) {
-            System.out.println(e);
-            return Optional.empty();
-        }
-    }
 
-    public String generateRefreshToken(String userId) {
+
+    public String generateRefreshToken(String email,Role role) {
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 100);
+        calendar.add(Calendar.MINUTE, expiresRefreshTokenInMinutes);
         Date expiresAt = calendar.getTime();
 
         return JWT.create()
-                .withSubject(userId)
+                .withSubject(email)
                 .withIssuer(issuer)
-                .withClaim("role", "USER")
-                .withClaim("TYPE_TOKEN","REFRESH_TOKEN")
+                .withClaim("typeToken",TypeToken.REFRESH.getNameTypeToken())
+                .withClaim("userEmail", email)
+                .withClaim("role", role.getNameRole())
                 .withExpiresAt(expiresAt)
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public String refreshAccessToken(String refreshToken) {
-        DecodedJWT decodedRefreshToken = JWT.require(Algorithm.HMAC256(secret))
-                .withIssuer(issuer)
-                .build()
-                .verify(refreshToken);
-
-
-
-        String userEmail = decodedRefreshToken.getSubject();
-
-        return tokenize(userEmail);
+    public String refreshAccessToken(String userEmail,Role role) {
+        return createAccessToken(userEmail,role,TypeToken.ACCESS);
     }
 
     private Algorithm algorithm() {
