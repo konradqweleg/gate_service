@@ -2,7 +2,10 @@ package com.example.gate_mychat_server.adapter.rest;
 
 import com.example.gate_mychat_server.adapter.rest.util.PrepareResultPort;
 import com.example.gate_mychat_server.model.Role;
+import com.example.gate_mychat_server.model.request.ActiveAccountCodeData;
+import com.example.gate_mychat_server.model.request.IdUserData;
 import com.example.gate_mychat_server.model.request.LoginAndPasswordData;
+import com.example.gate_mychat_server.model.request.UserRegisterData;
 import com.example.gate_mychat_server.port.in.AuthenticationUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +45,23 @@ public class AuthRestController {
 
         return authenticationUseCase.refreshAccessToken(userEmail, Role.of(role)).flatMap(convertObjectToJsonResponse::convert);
     }
+
+
+    @PostMapping("/register")
+    public Mono<ResponseEntity<String>> register(@RequestBody @Valid Mono<UserRegisterData> user) {
+        return authenticationUseCase.register(user).flatMap(convertObjectToJsonResponse::convert);
+    }
+
+    @PostMapping("/resendActiveAccountCode")
+    Mono<ResponseEntity<String>> resendActiveUserAccountCode(@RequestBody @Valid Mono<IdUserData> idUser) {
+        return authenticationUseCase.resendActiveUserAccountCode(idUser).flatMap(convertObjectToJsonResponse::convert);
+    }
+
+    @PostMapping("/activeAccount")
+    Mono<ResponseEntity<String>> activeUserAccount(@RequestBody @Valid Mono<ActiveAccountCodeData> codeVerification) {
+        return authenticationUseCase.activateUserAccount(codeVerification).flatMap(convertObjectToJsonResponse::convert);
+    }
+
 
 
 }
