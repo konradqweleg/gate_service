@@ -8,6 +8,7 @@ import com.example.gate_mychat_server.model.request.LoginAndPasswordData;
 import com.example.gate_mychat_server.model.request.UserRegisterData;
 import com.example.gate_mychat_server.port.in.AuthenticationUseCase;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -47,7 +48,7 @@ public class AuthRestController {
     }
 
 
-    @PostMapping("/register")
+    @PostMapping(value ="/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<String>> register(@RequestBody @Valid Mono<UserRegisterData> user) {
         return authenticationUseCase.register(user).flatMap(convertObjectToJsonResponse::convert);
     }
