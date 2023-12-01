@@ -14,7 +14,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
 
-    private static final String[] PUBLIC = {"/api/auth/login", "/api/auth/refreshAccessToken","/api/auth/register", "/api/auth/resendActiveAccountCode"};
+    private static final String[] PUBLIC = {"/api/auth/login", "/api/auth/refreshAccessToken","/api/v1/user/register", "/api/auth/resendActiveAccountCode"};
 
     private final TokenSecurityContextRepository securityContextRepository;
 

@@ -1,4 +1,4 @@
-package com.example.gate_mychat_server.adapter.rest.util;
+package com.example.gate_mychat_server.adapter.in.rest.util;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

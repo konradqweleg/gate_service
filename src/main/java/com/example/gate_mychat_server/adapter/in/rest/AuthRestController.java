@@ -1,6 +1,6 @@
-package com.example.gate_mychat_server.adapter.rest;
+package com.example.gate_mychat_server.adapter.in.rest;
 
-import com.example.gate_mychat_server.adapter.rest.util.PrepareResultPort;
+import com.example.gate_mychat_server.adapter.in.rest.util.ConvertToJSON;
 import com.example.gate_mychat_server.model.Role;
 import com.example.gate_mychat_server.model.request.ActiveAccountCodeData;
 import com.example.gate_mychat_server.model.request.IdUserData;
@@ -19,20 +19,19 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @org.springframework.web.bind.annotation.RestController
-@RequestMapping(value = "/api/auth")
+@RequestMapping(value = "/api/v1/auth")
 public class AuthRestController {
 
     private final AuthenticationUseCase authenticationUseCase;
-    private final PrepareResultPort convertObjectToJsonResponse;
 
-    public AuthRestController(AuthenticationUseCase authenticationUseCase, PrepareResultPort convertObjectToJsonResponse) {
+    public AuthRestController(AuthenticationUseCase authenticationUseCase) {
         this.authenticationUseCase = authenticationUseCase;
-        this.convertObjectToJsonResponse = convertObjectToJsonResponse;
+
     }
 
     @PostMapping("/login")
     public Mono<ResponseEntity<String>> logIn(@RequestBody @Valid Mono<LoginAndPasswordData> user) {
-        return authenticationUseCase.login(user).flatMap(convertObjectToJsonResponse::convert);
+        return authenticationUseCase.login(user).flatMap(ConvertToJSON::convert);
     }
 
     @PostMapping("/refreshAccessToken")
@@ -44,24 +43,11 @@ public class AuthRestController {
         String userEmail = authorityList.get(2).getAuthority();
 
 
-        return authenticationUseCase.refreshAccessToken(userEmail, Role.of(role)).flatMap(convertObjectToJsonResponse::convert);
+        return authenticationUseCase.refreshAccessToken(userEmail, Role.of(role)).flatMap(ConvertToJSON::convert);
     }
 
 
-    @PostMapping(value ="/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<String>> register(@RequestBody @Valid Mono<UserRegisterData> user) {
-        return authenticationUseCase.register(user).flatMap(convertObjectToJsonResponse::convert);
-    }
 
-    @PostMapping("/resendActiveAccountCode")
-    Mono<ResponseEntity<String>> resendActiveUserAccountCode(@RequestBody @Valid Mono<IdUserData> idUser) {
-        return authenticationUseCase.resendActiveUserAccountCode(idUser).flatMap(convertObjectToJsonResponse::convert);
-    }
-
-    @PostMapping("/activeAccount")
-    Mono<ResponseEntity<String>> activeUserAccount(@RequestBody @Valid Mono<ActiveAccountCodeData> codeVerification) {
-        return authenticationUseCase.activateUserAccount(codeVerification).flatMap(convertObjectToJsonResponse::convert);
-    }
 
 
 

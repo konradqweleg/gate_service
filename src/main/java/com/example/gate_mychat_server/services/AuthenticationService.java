@@ -33,7 +33,7 @@ public class AuthenticationService implements AuthenticationUseCase {
     public Mono<Result<LoginResponse>> login(Mono<LoginAndPasswordData> loginAndPasswordData) {
         Mono<LoginAndPasswordData> cacheLoginAndPassword = loginAndPasswordData.cache();
 
-        return authenticationPort.isCorrectCredentials(cacheLoginAndPassword).filter(
+        return authenticationPort.login(cacheLoginAndPassword).filter(
                         isCorrectCredentialsResult -> isCorrectCredentialsResult.isSuccess()
                                 && isCorrectCredentialsResult.getValue().isCorrectCredentials()
                 ).
@@ -58,63 +58,7 @@ public class AuthenticationService implements AuthenticationUseCase {
 
     }
 
-    @Override
-    public Mono<Result<Status>> register(Mono<UserRegisterData> loginAndPasswordData) {
-        return authenticationPort.register(loginAndPasswordData).flatMap(
-                statusResult -> {
-                    if (statusResult.isSuccess()) {
-                        return Mono.just(Result.success(new Status(statusResult.getValue().correctResponse())));
-                    } else {
-                        return Mono.just(Result.<Status>error(statusResult.getError()));
-                    }
-                }
-        ).onErrorResume(
-                response -> Mono.just(Result.<Status>error(response.getMessage())));
 
-
-    }
-
-    @Override
-    public Mono<Result<IsCorrectCredentials>> isCorrectCredentials(Mono<LoginAndPasswordData> loginAndPasswordData) {
-        return authenticationPort.isCorrectCredentials(loginAndPasswordData).flatMap(
-                isCorrectCredentialsResult -> {
-                    if (isCorrectCredentialsResult.isSuccess()) {
-                        return Mono.just(Result.success(new IsCorrectCredentials(isCorrectCredentialsResult.getValue().isCorrectCredentials())));
-                    } else {
-                        return Mono.just(Result.<IsCorrectCredentials>error(isCorrectCredentialsResult.getError()));
-                    }
-                }
-        ).onErrorResume(
-                response -> Mono.just(Result.<IsCorrectCredentials>error(response.getMessage())));
-    }
-
-    @Override
-    public Mono<Result<Status>> resendActiveUserAccountCode(Mono<IdUserData> user) {
-        return authenticationPort.resendActiveUserAccountCode(user).flatMap(
-                statusResult -> {
-                    if (statusResult.isSuccess()) {
-                        return Mono.just(Result.success(new Status(statusResult.getValue().correctResponse())));
-                    } else {
-                        return Mono.just(Result.<Status>error(statusResult.getError()));
-                    }
-                }
-        ).onErrorResume(
-                response -> Mono.just(Result.<Status>error(response.getMessage())));
-    }
-
-    @Override
-    public Mono<Result<Status>> activateUserAccount(Mono<ActiveAccountCodeData> user) {
-        return authenticationPort.activateUserAccount(user).flatMap(
-                statusResult -> {
-                    if (statusResult.isSuccess()) {
-                        return Mono.just(Result.success(new Status(statusResult.getValue().correctResponse())));
-                    } else {
-                        return Mono.just(Result.<Status>error(statusResult.getError()));
-                    }
-                }
-        ).onErrorResume(
-                response -> Mono.just(Result.<Status>error(response.getMessage())));
-    }
 
 
 }

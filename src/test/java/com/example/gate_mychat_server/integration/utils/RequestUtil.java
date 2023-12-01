@@ -10,7 +10,7 @@ public class RequestUtil {
     }
 
     public URI createRequestRegister() throws  URISyntaxException {
-        return new URI("http://localhost:" + serverPort + "/api/auth/register");
+        return new URI("http://localhost:" + serverPort + "/api/v1/user/register");
     }
 
 

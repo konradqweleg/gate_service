@@ -1,14 +1,11 @@
-package com.example.gate_mychat_server.restRequest;
+package com.example.gate_mychat_server.adapter.out.userServices;
 
-import com.example.gate_mychat_server.model.UserMyChat;
 import com.example.gate_mychat_server.model.request.ActiveAccountCodeData;
 import com.example.gate_mychat_server.model.request.IdUserData;
-import com.example.gate_mychat_server.model.request.LoginAndPasswordData;
 import com.example.gate_mychat_server.model.request.UserRegisterData;
-import com.example.gate_mychat_server.model.response.IsCorrectCredentials;
 import com.example.gate_mychat_server.model.response.Status;
 import com.example.gate_mychat_server.model.util.Result;
-import com.example.gate_mychat_server.port.out.AuthenticationPort;
+import com.example.gate_mychat_server.port.out.UserPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
@@ -21,40 +18,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 @Service
-public class AuthRequest implements AuthenticationPort {
+public class UserRequest implements UserPort {
 
-    private final ObjectMapper objectMapper ;
-    private final URI uriLogin = new URI("http://localhost:8082/authentication/login");
-    private final URI uriRegister = new URI("http://localhost:8082/authentication/register");
-    private final URI uriResendActiveUserAccountCode = new URI("http://localhost:8082/activeAccount/resendCode");
-    private final URI uriActiveUserAccount = new URI("http://localhost:8082/activeAccount");
+    private final URI uriRegister = new URI("http://localhost:8082/userServices/api/v1/user/register");
+    private final URI uriResendActiveUserAccountCode = new URI("http://localhost:8082/userServices/api/v1/user/resendActiveUserAccountCode");
+    private final URI uriActiveUserAccount = new URI("http://localhost:8082/userServices/api/v1/user/activeUserAccount");
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AuthRequest(ObjectMapper objectMapper) throws URISyntaxException {
-        this.objectMapper = objectMapper;
+    public UserRequest() throws URISyntaxException {
     }
 
-
-    @Override
-    public Mono<Result<IsCorrectCredentials>> isCorrectCredentials(Mono<LoginAndPasswordData> loginAndPasswordData) {
-
-        return WebClient.create().post()
-                .uri(uriLogin)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(loginAndPasswordData, LoginAndPasswordData.class))
-                .retrieve()
-                .toEntity(String.class)
-                .flatMap(responseEntity -> {
-                    try {
-                        IsCorrectCredentials isCorrectCredentials =  objectMapper.readValue(responseEntity.getBody(), IsCorrectCredentials.class);
-                        return Mono.just(Result.success(isCorrectCredentials));
-                    } catch (JsonProcessingException e) {
-                        return Mono.error(new RuntimeException(e));
-                    }
-
-                })
-                .onErrorResume(response -> Mono.just(Result.<IsCorrectCredentials>error(response.getMessage())));
-    }
 
     @Override
     public Mono<Result<Status>> register(Mono<UserRegisterData> userRegisterData) {

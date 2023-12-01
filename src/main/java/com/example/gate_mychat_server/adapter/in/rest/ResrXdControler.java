@@ -1,11 +1,10 @@
-package com.example.gate_mychat_server.adapter.rest;
+package com.example.gate_mychat_server.adapter.in.rest;
 
+import com.example.gate_mychat_server.adapter.in.rest.exception.UserException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Mono;
