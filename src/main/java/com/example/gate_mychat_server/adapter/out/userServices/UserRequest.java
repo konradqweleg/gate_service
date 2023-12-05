@@ -8,6 +8,7 @@ import com.example.gate_mychat_server.model.util.Result;
 import com.example.gate_mychat_server.port.out.UserPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -36,9 +37,14 @@ public class UserRequest implements UserPort {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(userRegisterData, UserRegisterData.class))
                 .retrieve()
+                .onStatus(
+                        HttpStatus.BAD_REQUEST::equals,
+                        response -> response.bodyToMono(String.class).map(Exception::new)
+                )
                 .toEntity(String.class)
                 .flatMap(responseEntity -> {
                     try {
+                        System.out.println(responseEntity.getBody());
                         Status status =  objectMapper.readValue(responseEntity.getBody(), Status.class);
                         return Mono.just(Result.success(status));
                     } catch (JsonProcessingException e) {

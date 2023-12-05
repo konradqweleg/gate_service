@@ -34,10 +34,19 @@ public class Result<T> {
     }
 
     public String getError() {
+
+
         if (isError()) {
-            return "{ \"ErrorMessage\" : \" "+errorMessage+" \" }";
+
+            if (errorMessage.contains("ErrorMessage")) {
+                return errorMessage;
+            } else {
+                return "{\"ErrorMessage\" : \" " + errorMessage + " \"}";
+            }
         } else {
             throw new IllegalStateException("Result does not contain an error");
         }
     }
+
+
 }
