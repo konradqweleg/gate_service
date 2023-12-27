@@ -14,7 +14,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
 
-    private static final String[] PUBLIC = {"/api/auth/login", "/api/auth/refreshAccessToken","/api/v1/user/register", "/api/auth/resendActiveAccountCode"};
+    private static final String[] PUBLIC = {"/api/v1/auth/login", "/api/auth/refreshAccessToken","/api/v1/user/register", "/api/v1/user/resendActiveAccountCode","/api/v1/user/activeUserAccount"};
 
     private final TokenSecurityContextRepository securityContextRepository;
 
@@ -30,8 +30,6 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
-
-
 
                 .formLogin().disable()
 
