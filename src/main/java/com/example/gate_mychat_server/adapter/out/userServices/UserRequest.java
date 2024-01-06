@@ -74,10 +74,14 @@ public class UserRequest implements UserPort {
     }
 
     @Override
-    public Mono<Result<Status>> activateUserAccount(Mono<ActiveAccountCodeData> user) {
+    public Mono<Result<Status>> activateUserAccount(Mono<ActiveAccountCodeData> activeAccountCodeDataMono) {
         return WebClient.create().post().uri(uriActiveUserAccount).contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(user, ActiveAccountCodeData.class))
+                .body(BodyInserters.fromPublisher(activeAccountCodeDataMono, ActiveAccountCodeData.class))
                 .retrieve()
+                .onStatus(
+                        HttpStatus.BAD_REQUEST::equals,
+                        response -> response.bodyToMono(String.class).map(Exception::new)
+                )
                 .toEntity(String.class)
                 .flatMap(responseEntity -> {
                     try {
@@ -86,7 +90,6 @@ public class UserRequest implements UserPort {
                     } catch (JsonProcessingException e) {
                         return Mono.error(new RuntimeException(e));
                     }
-
                 })
                 .onErrorResume(response -> Mono.just(Result.<Status>error(response.getMessage())));
     }
