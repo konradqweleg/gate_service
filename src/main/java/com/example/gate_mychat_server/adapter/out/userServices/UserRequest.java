@@ -2,6 +2,7 @@ package com.example.gate_mychat_server.adapter.out.userServices;
 
 import com.example.gate_mychat_server.model.request.ActiveAccountCodeData;
 import com.example.gate_mychat_server.model.request.IdUserData;
+import com.example.gate_mychat_server.model.request.UserEmailData;
 import com.example.gate_mychat_server.model.request.UserRegisterData;
 import com.example.gate_mychat_server.model.response.Status;
 import com.example.gate_mychat_server.model.util.Result;
@@ -56,10 +57,14 @@ public class UserRequest implements UserPort {
     }
 
     @Override
-    public Mono<Result<Status>> resendActiveUserAccountCode(Mono<IdUserData> user) {
+    public Mono<Result<Status>> resendActiveUserAccountCode(Mono<UserEmailData> userEmailDataMono) {
         return WebClient.create().post().uri(uriResendActiveUserAccountCode).contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(user, IdUserData.class))
+                .body(BodyInserters.fromPublisher(userEmailDataMono, UserEmailData.class))
                 .retrieve()
+                .onStatus(
+                        HttpStatus.BAD_REQUEST::equals,
+                        response -> response.bodyToMono(String.class).map(Exception::new)
+                )
                 .toEntity(String.class)
                 .flatMap(responseEntity -> {
                     try {

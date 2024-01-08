@@ -4,6 +4,7 @@ package com.example.gate_mychat_server.adapter.in.rest;
 import com.example.gate_mychat_server.adapter.in.rest.util.ConvertToJSON;
 import com.example.gate_mychat_server.model.request.ActiveAccountCodeData;
 import com.example.gate_mychat_server.model.request.IdUserData;
+import com.example.gate_mychat_server.model.request.UserEmailData;
 import com.example.gate_mychat_server.model.request.UserRegisterData;
 import com.example.gate_mychat_server.port.in.UserUseCase;
 import jakarta.validation.Valid;
@@ -28,8 +29,8 @@ public class UserRestController {
     }
 
     @PostMapping("/resendActiveUserAccountCode")
-    Mono<ResponseEntity<String>> resendActiveUserAccountCode(@RequestBody @Valid Mono<IdUserData> idUser) {
-        return userUseCase.resendActiveUserAccountCode(idUser).flatMap(ConvertToJSON::convert);
+    Mono<ResponseEntity<String>> resendActiveUserAccountCode(@RequestBody @Valid Mono<UserEmailData> userEmailDataMono) {
+        return userUseCase.resendActiveUserAccountCode(userEmailDataMono).flatMap(ConvertToJSON::convert);
     }
 
     @PostMapping("/activeUserAccount")
