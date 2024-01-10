@@ -63,4 +63,46 @@ public class UserService  implements UserUseCase {
         ).onErrorResume(
                 response -> Mono.just(Result.<Status>error(response.getMessage())));
     }
+
+    @Override
+    public Mono<Result<Status>> checkIsUserWithThisEmailExist(Mono<UserEmailData> user) {
+        return userPort.checkIsUserWithThisEmailExists(user).flatMap(
+                statusResult -> {
+                    if (statusResult.isSuccess()) {
+                        return Mono.just(Result.success(new Status(statusResult.getValue().correctResponse())));
+                    } else {
+                        return Mono.just(Result.<Status>error(statusResult.getError()));
+                    }
+                }
+        ).onErrorResume(
+                response -> Mono.just(Result.<Status>error(response.getMessage())));
+    }
+
+    @Override
+    public Mono<Result<Status>> sendResetPasswordCode(Mono<UserEmailData> emailDataMono) {
+        return userPort.sendResetPasswordCode(emailDataMono).flatMap(
+                statusResult -> {
+                    if (statusResult.isSuccess()) {
+                        return Mono.just(Result.success(new Status(statusResult.getValue().correctResponse())));
+                    } else {
+                        return Mono.just(Result.<Status>error(statusResult.getError()));
+                    }
+                }
+        ).onErrorResume(
+                response -> Mono.just(Result.<Status>error(response.getMessage())));
+    }
+
+    @Override
+    public Mono<Result<Status>> checkIsCorrectResetPasswordCode(Mono<UserEmailAndCodeData> userEmailAndCodeMono) {
+       return userPort.checkIsCorrectResetPasswordCode(userEmailAndCodeMono).flatMap(
+                statusResult -> {
+                    if (statusResult.isSuccess()) {
+                        return Mono.just(Result.success(new Status(statusResult.getValue().correctResponse())));
+                    } else {
+                        return Mono.just(Result.<Status>error(statusResult.getError()));
+                    }
+                }
+        ).onErrorResume(
+                response -> Mono.just(Result.<Status>error(response.getMessage())));
+    }
 }

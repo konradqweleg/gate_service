@@ -2,10 +2,7 @@ package com.example.gate_mychat_server.adapter.in.rest;
 
 
 import com.example.gate_mychat_server.adapter.in.rest.util.ConvertToJSON;
-import com.example.gate_mychat_server.model.request.ActiveAccountCodeData;
-import com.example.gate_mychat_server.model.request.IdUserData;
-import com.example.gate_mychat_server.model.request.UserEmailData;
-import com.example.gate_mychat_server.model.request.UserRegisterData;
+import com.example.gate_mychat_server.model.request.*;
 import com.example.gate_mychat_server.port.in.UserUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
@@ -36,6 +33,21 @@ public class UserRestController {
     @PostMapping("/activeUserAccount")
     Mono<ResponseEntity<String>> activeUserAccount(@RequestBody @Valid Mono<ActiveAccountCodeData> codeVerification) {
         return userUseCase.activateUserAccount(codeVerification).flatMap(ConvertToJSON::convert);
+    }
+
+    @PostMapping("/checkIsUserWithThisEmailExist")
+    Mono<ResponseEntity<String>> checkIsUserWithThisEmailExist(@RequestBody @Valid Mono<UserEmailData> mail) {
+        return userUseCase.checkIsUserWithThisEmailExist(mail).flatMap(ConvertToJSON::convert);
+    }
+
+    @PostMapping("/sendResetPasswordCode")
+    Mono<ResponseEntity<String>> sendResetPasswordCode(@RequestBody @Valid Mono<UserEmailData> emailDataMono) {
+        return userUseCase.sendResetPasswordCode(emailDataMono).flatMap(ConvertToJSON::convert);
+    }
+
+    @PostMapping("/checkIsCorrectResetPasswordCode")
+    Mono<ResponseEntity<String>> checkIsCorrectResetPasswordCode(@RequestBody @Valid Mono<UserEmailAndCodeData> userEmailAndCodeDataMono) {
+        return userUseCase.checkIsCorrectResetPasswordCode(userEmailAndCodeDataMono).flatMap(ConvertToJSON::convert);
     }
 
 }

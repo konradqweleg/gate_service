@@ -12,4 +12,10 @@ public interface UserUseCase {
     Mono<Result<Status>> resendActiveUserAccountCode(Mono<UserEmailData> userEmailDataMono);
 
     Mono<Result<Status>> activateUserAccount(Mono<ActiveAccountCodeData> user);
+
+    Mono<Result<Status>> checkIsUserWithThisEmailExist(Mono<UserEmailData> user);
+
+    Mono<Result<Status>> sendResetPasswordCode(Mono<UserEmailData> emailDataMono);
+
+    Mono<Result<Status>> checkIsCorrectResetPasswordCode(Mono<UserEmailAndCodeData> userEmailAndCodeDataMono);
 }
