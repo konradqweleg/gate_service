@@ -12,4 +12,5 @@ public interface UserPort {
      Mono<Result<Status>> checkIsUserWithThisEmailExists(Mono<UserEmailData> user);
      Mono<Result<Status>> sendResetPasswordCode(Mono<UserEmailData> emailDataMono);
      Mono<Result<Status>> checkIsCorrectResetPasswordCode(Mono<UserEmailAndCodeData> userEmailAndCodeDataMono);
+     Mono<Result<Status>> changeUserPassword(Mono<ChangePasswordData> userEmailAndCodeAndPasswordMono);
 }

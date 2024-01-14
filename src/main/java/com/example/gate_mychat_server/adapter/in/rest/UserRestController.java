@@ -50,4 +50,9 @@ public class UserRestController {
         return userUseCase.checkIsCorrectResetPasswordCode(userEmailAndCodeDataMono).flatMap(ConvertToJSON::convert);
     }
 
+    @PostMapping("/changeUserPassword")
+    Mono<ResponseEntity<String>> changeUserPassword(@RequestBody @Valid Mono<ChangePasswordData> userEmailAndCodeAndPasswordMono) {
+        return userUseCase.changeUserPassword(userEmailAndCodeAndPasswordMono).flatMap(ConvertToJSON::convert);
+    }
+
 }

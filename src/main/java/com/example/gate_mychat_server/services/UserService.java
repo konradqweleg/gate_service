@@ -105,4 +105,18 @@ public class UserService  implements UserUseCase {
         ).onErrorResume(
                 response -> Mono.just(Result.<Status>error(response.getMessage())));
     }
+
+    @Override
+    public Mono<Result<Status>> changeUserPassword(Mono<ChangePasswordData> userEmailAndCodeAndPasswordMono) {
+        return userPort.changeUserPassword(userEmailAndCodeAndPasswordMono).flatMap(
+                statusResult -> {
+                    if (statusResult.isSuccess()) {
+                        return Mono.just(Result.success(new Status(statusResult.getValue().correctResponse())));
+                    } else {
+                        return Mono.just(Result.<Status>error(statusResult.getError()));
+                    }
+                }
+        ).onErrorResume(
+                response -> Mono.just(Result.<Status>error(response.getMessage())));
+    }
 }

@@ -18,4 +18,6 @@ public interface UserUseCase {
     Mono<Result<Status>> sendResetPasswordCode(Mono<UserEmailData> emailDataMono);
 
     Mono<Result<Status>> checkIsCorrectResetPasswordCode(Mono<UserEmailAndCodeData> userEmailAndCodeDataMono);
+
+    Mono<Result<Status>> changeUserPassword(Mono<ChangePasswordData> userEmailAndCodeAndPasswordMono);
 }

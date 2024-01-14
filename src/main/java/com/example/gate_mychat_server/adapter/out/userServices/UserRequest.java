@@ -29,6 +29,8 @@ public class UserRequest implements UserPort {
 
     private final URI uriCheckIsCorrectResetPasswordCode = new URI("http://localhost:8082/userServices/api/v1/user/checkIsCorrectResetPasswordCode");
 
+    private final URI uriChangeUserPassword = new URI("http://localhost:8082/userServices/api/v1/user/resetPassword");
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public UserRequest() throws URISyntaxException {
@@ -148,6 +150,27 @@ public class UserRequest implements UserPort {
     public Mono<Result<Status>> checkIsCorrectResetPasswordCode(Mono<UserEmailAndCodeData> userEmailAndCodeDataMono) {
       return WebClient.create().post().uri(uriCheckIsCorrectResetPasswordCode).contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(userEmailAndCodeDataMono, UserEmailAndCodeData.class))
+                .retrieve()
+                .onStatus(
+                        HttpStatus.BAD_REQUEST::equals,
+                        response -> response.bodyToMono(String.class).map(Exception::new)
+                )
+                .toEntity(String.class)
+                .flatMap(responseEntity -> {
+                    try {
+                        Status status =  objectMapper.readValue(responseEntity.getBody(), Status.class);
+                        return Mono.just(Result.success(status));
+                    } catch (JsonProcessingException e) {
+                        return Mono.error(new RuntimeException(e));
+                    }
+                })
+                .onErrorResume(response -> Mono.just(Result.<Status>error(response.getMessage())));
+    }
+
+    @Override
+    public Mono<Result<Status>> changeUserPassword(Mono<ChangePasswordData> userEmailAndCodeAndPasswordMono) {
+        return WebClient.create().post().uri(uriChangeUserPassword).contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(userEmailAndCodeAndPasswordMono, ChangePasswordData.class))
                 .retrieve()
                 .onStatus(
                         HttpStatus.BAD_REQUEST::equals,
