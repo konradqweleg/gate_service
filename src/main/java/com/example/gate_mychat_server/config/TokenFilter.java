@@ -21,7 +21,7 @@
 //
 //    Tokenizer tokenizer = new Tokenizer();
 //
-//    List<String> publicApi = List.of("/api/login", "/api/refresh-token");
+//    List<String> publicApi = List.of("/api/email", "/api/refresh-token");
 //
 //    boolean isPublicRequest(String path) {
 //        boolean ifRequestToPublicApi = false;
