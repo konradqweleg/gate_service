@@ -1,6 +1,7 @@
 package com.example.gate_mychat_server.adapter.out.auth;
 
 
+import com.example.gate_mychat_server.error.ErrorMessage;
 import com.example.gate_mychat_server.model.request.LoginAndPasswordData;
 import com.example.gate_mychat_server.model.response.IsCorrectCredentials;
 import com.example.gate_mychat_server.model.util.Result;
@@ -41,13 +42,19 @@ public class AuthRequest implements AuthenticationPort {
                 .flatMap(responseEntity -> {
                     try {
                         IsCorrectCredentials isCorrectCredentials =  objectMapper.readValue(responseEntity.getBody(), IsCorrectCredentials.class);
-                        return Mono.just(Result.success(isCorrectCredentials));
+
+                        if(isCorrectCredentials.isCorrectCredentials())
+                            return Mono.just(Result.success(isCorrectCredentials));
+                        else
+                            return Mono.just(Result.<IsCorrectCredentials>error(ErrorMessage.BAD_CREDENTIALS.getMessage()));
+
+
                     } catch (JsonProcessingException e) {
-                        return Mono.error(new RuntimeException(e));
+                        return Mono.just(Result.<IsCorrectCredentials>error(ErrorMessage.ERROR.getMessage()));
                     }
 
                 })
-                .onErrorResume(response -> Mono.just(Result.<IsCorrectCredentials>error(response.getMessage())));
+                .onErrorResume(response -> Mono.just(Result.<IsCorrectCredentials>error(ErrorMessage.ERROR.getMessage())));
     }
 
 

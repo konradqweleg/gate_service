@@ -1,6 +1,7 @@
 package com.example.gate_mychat_server.services;
 
 import com.example.gate_mychat_server.config.Tokenizer;
+import com.example.gate_mychat_server.error.ErrorMessage;
 import com.example.gate_mychat_server.model.Role;
 import com.example.gate_mychat_server.model.TypeToken;
 import com.example.gate_mychat_server.model.request.LoginAndPasswordData;
@@ -17,7 +18,7 @@ public class AuthenticationService implements AuthenticationUseCase {
     AuthenticationPort authenticationPort;
     private final Tokenizer tokenizer;
 
-    private static final String ERROR = "Bad credentials";
+
 
     public AuthenticationService(AuthenticationPort authenticationPort, Tokenizer tokenizer) {
         this.authenticationPort = authenticationPort;
@@ -40,9 +41,9 @@ public class AuthenticationService implements AuthenticationUseCase {
                             LoginResponse loginResponse = new LoginResponse(token, refreshToken);
                             return Mono.just(Result.<LoginResponse>success(loginResponse));
                         }
-                ).switchIfEmpty(Mono.just(Result.<LoginResponse>error(ERROR)))
+                ).switchIfEmpty(Mono.just(Result.<LoginResponse>error(ErrorMessage.BAD_CREDENTIALS.getMessage())))
                 .onErrorResume(
-                        response -> Mono.just(Result.<LoginResponse>error(ERROR)));
+                        response -> Mono.just(Result.<LoginResponse>error(ErrorMessage.ERROR.getMessage())));
 
     }
 
