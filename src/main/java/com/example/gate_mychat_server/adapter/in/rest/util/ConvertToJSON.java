@@ -4,7 +4,9 @@ package com.example.gate_mychat_server.adapter.in.rest.util;
 import com.example.gate_mychat_server.model.util.Result;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class ConvertToJSON {
@@ -23,5 +25,20 @@ public class ConvertToJSON {
             }
 
         }
+    }
+
+    public static <T> Mono<ResponseEntity<String>> convert(Flux<T> response) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        return response.collectList().map(users -> {
+            try {
+                String json = objectMapper.writeValueAsString(users);
+                return ResponseEntity.ok().body(json);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ERROR_CONVERSION_TO_JSON);
+            }
+        }).onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage())));
+
+
     }
 }
