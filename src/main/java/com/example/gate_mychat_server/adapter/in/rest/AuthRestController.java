@@ -46,6 +46,12 @@ public class AuthRestController {
         return authenticationUseCase.refreshAccessToken(userEmail, Role.of(role)).flatMap(ConvertToJSON::convert);
     }
 
+    @GetMapping(value ="/isCorrectAccessToken", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ACCESS_TOKEN')")
+    public Mono<ResponseEntity<String>> isCorrectAccessToken() {
+        return Mono.just(ResponseEntity.ok().body("{\"status\":\"OK\"}"));
+    }
+
 
 
 
