@@ -3,6 +3,7 @@ package com.example.gate_mychat_server.services;
 import com.example.gate_mychat_server.model.request.*;
 import com.example.gate_mychat_server.model.response.IsCorrectCredentials;
 import com.example.gate_mychat_server.model.response.Status;
+import com.example.gate_mychat_server.model.response.UserData;
 import com.example.gate_mychat_server.model.util.Result;
 import com.example.gate_mychat_server.port.in.UserUseCase;
 import com.example.gate_mychat_server.port.out.UserPort;
@@ -118,5 +119,19 @@ public class UserService  implements UserUseCase {
                 }
         ).onErrorResume(
                 response -> Mono.just(Result.<Status>error(response.getMessage())));
+    }
+
+    @Override
+    public Mono<Result<UserData>> getUserAboutEmail(Mono<UserEmailData> userEmailDataMono) {
+        return userPort.getUserAboutEmail(userEmailDataMono).flatMap(
+                userDataResult -> {
+                    if (userDataResult.isSuccess()) {
+                        return Mono.just(Result.success(userDataResult.getValue()));
+                    } else {
+                        return Mono.just(Result.<UserData>error(userDataResult.getError()));
+                    }
+                }
+        ).onErrorResume(
+                response -> Mono.just(Result.<UserData>error(response.getMessage())));
     }
 }

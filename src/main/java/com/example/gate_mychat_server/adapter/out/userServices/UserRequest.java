@@ -2,6 +2,7 @@ package com.example.gate_mychat_server.adapter.out.userServices;
 
 import com.example.gate_mychat_server.model.request.*;
 import com.example.gate_mychat_server.model.response.Status;
+import com.example.gate_mychat_server.model.response.UserData;
 import com.example.gate_mychat_server.model.util.Result;
 import com.example.gate_mychat_server.port.out.UserPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +31,8 @@ public class UserRequest implements UserPort {
     private final URI uriCheckIsCorrectResetPasswordCode = new URI("http://localhost:8082/userServices/api/v1/user/checkIsCorrectResetPasswordCode");
 
     private final URI uriChangeUserPassword = new URI("http://localhost:8082/userServices/api/v1/user/resetPassword");
+
+    private final URI uriGetUserAboutEmail = new URI("http://localhost:8082/userServices/api/v1/user/getUserAboutEmail?email=");
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -186,5 +189,38 @@ public class UserRequest implements UserPort {
                     }
                 })
                 .onErrorResume(response -> Mono.just(Result.<Status>error(response.getMessage())));
+    }
+
+    @Override
+    public Mono<Result<UserData>> getUserAboutEmail(Mono<UserEmailData> userEmailDataMono) {
+
+
+        return userEmailDataMono.flatMap(userEmailData -> {
+
+            System.out.println("uriGetUserAboutEmail" + userEmailData.email().toString());
+                 return    WebClient.create()
+                            .get()
+                            .uri(uriGetUserAboutEmail + userEmailData.email().toString())
+                            .accept(MediaType.APPLICATION_JSON)
+                            .retrieve()
+                            .onStatus(
+                                    HttpStatus.BAD_REQUEST::equals,
+                                    response -> response.bodyToMono(String.class).map(Exception::new)
+                            )
+                            .toEntity(String.class)
+                            .flatMap(responseEntity -> {
+                                try {
+                                    UserData userData = objectMapper.readValue(responseEntity.getBody(), UserData.class);
+                                    return Mono.just(Result.success(userData));
+                                } catch (JsonProcessingException e) {
+                                    return Mono.error(new RuntimeException(e));
+                                }
+                            })
+                            .onErrorResume(response -> Mono.just(Result.<UserData>error(response.getMessage())));
+
+                }
+        );
+
+
     }
 }

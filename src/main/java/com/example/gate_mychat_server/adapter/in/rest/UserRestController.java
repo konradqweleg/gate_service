@@ -7,9 +7,8 @@ import com.example.gate_mychat_server.port.in.UserUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @org.springframework.web.bind.annotation.RestController
@@ -53,6 +52,13 @@ public class UserRestController {
     @PostMapping("/changeUserPassword")
     Mono<ResponseEntity<String>> changeUserPassword(@RequestBody @Valid Mono<ChangePasswordData> userEmailAndCodeAndPasswordMono) {
         return userUseCase.changeUserPassword(userEmailAndCodeAndPasswordMono).flatMap(ConvertToJSON::convert);
+    }
+
+
+    @GetMapping(value ="/getUserAboutEmail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ACCESS_TOKEN')")
+    public Mono<ResponseEntity<String>> getUserAboutEmail(@RequestParam @Valid UserEmailData email) {
+        return userUseCase.getUserAboutEmail(Mono.just(email)).flatMap(ConvertToJSON::convert);
     }
 
 }
