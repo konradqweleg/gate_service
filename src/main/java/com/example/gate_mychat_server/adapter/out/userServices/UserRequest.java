@@ -196,8 +196,6 @@ public class UserRequest implements UserPort {
 
 
         return userEmailDataMono.flatMap(userEmailData -> {
-
-            System.out.println("uriGetUserAboutEmail" + userEmailData.email().toString());
                  return    WebClient.create()
                             .get()
                             .uri(uriGetUserAboutEmail + userEmailData.email().toString())
