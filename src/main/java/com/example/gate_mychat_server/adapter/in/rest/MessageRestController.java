@@ -2,8 +2,10 @@ package com.example.gate_mychat_server.adapter.in.rest;
 
 import com.example.gate_mychat_server.adapter.in.rest.util.ConvertToJSON;
 import com.example.gate_mychat_server.model.request.IdUserData;
-import com.example.gate_mychat_server.model.request.UserRegisterData;
-import com.example.gate_mychat_server.port.out.MessageHistoryPort;
+
+import com.example.gate_mychat_server.model.request.MessageData;
+import com.example.gate_mychat_server.port.in.MessageHistoryUseCase;
+import com.example.gate_mychat_server.port.in.MessageUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +16,13 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/api/v1/message")
 @RestController
 public class MessageRestController {
-    private final MessageHistoryPort messageHistoryPort;
+    private final MessageHistoryUseCase messageHistoryPort;
 
-    public MessageRestController(MessageHistoryPort messageHistoryPort) {
+    private final MessageUseCase messageUseCase;
+
+    public MessageRestController(MessageHistoryUseCase messageHistoryPort, MessageUseCase messageUseCase) {
         this.messageHistoryPort = messageHistoryPort;
+        this.messageUseCase = messageUseCase;
     }
 
     @GetMapping(value ="/getLastMessageWithAllFriendsUser", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,5 +31,10 @@ public class MessageRestController {
         return ConvertToJSON.convert(messageHistoryPort.getLastMessagesWithFriends(Mono.just(new IdUserData(idUser))));
     }
 
+    @PostMapping(value = "/insertMessage", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ACCESS_TOKEN')")
+    public Mono<ResponseEntity<String>> insertMessage(@RequestBody @Valid Mono<MessageData> message) {
+        return messageUseCase.insertMessage(message).flatMap(ConvertToJSON::convert);
+    }
 
 }

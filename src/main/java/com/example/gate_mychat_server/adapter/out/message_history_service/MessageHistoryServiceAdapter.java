@@ -2,6 +2,7 @@ package com.example.gate_mychat_server.adapter.out.message_history_service;
 
 import com.example.gate_mychat_server.model.request.IdUserData;
 import com.example.gate_mychat_server.model.response.LastMessageWithUser;
+import com.example.gate_mychat_server.port.in.MessageHistoryUseCase;
 import com.example.gate_mychat_server.port.out.MessageHistoryPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,6 +22,8 @@ public class MessageHistoryServiceAdapter implements MessageHistoryPort {
     private final String uriMessageHistoryServiceGetLastMessageWithAllFriends = "http://127.0.0.1:8086/messageHistory/api/v1/history/getLastMessagesWithFriendForUser?idUser=";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+
     @Override
     public Flux<LastMessageWithUser> getLastMessagesWithFriends(Mono<IdUserData> idUserDataMono) {
         return idUserDataMono.flatMapMany(idUserData -> WebClient.create().get().uri(uriMessageHistoryServiceGetLastMessageWithAllFriends + idUserData.idUser().toString())
