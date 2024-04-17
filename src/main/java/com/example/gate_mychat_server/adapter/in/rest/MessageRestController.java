@@ -37,4 +37,10 @@ public class MessageRestController {
         return messageUseCase.insertMessage(message).flatMap(ConvertToJSON::convert);
     }
 
+    @GetMapping(value = "/getMessageBetweenUsers", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ACCESS_TOKEN')")
+    public Mono<ResponseEntity<String>> getMessageBetweenUsers(@RequestParam @Valid Long idFirstUser, @RequestParam @Valid Long idFriend) {
+        return ConvertToJSON.convert(messageUseCase.getMessageBetweenUsers(Mono.just(new IdUserData(idFirstUser)), Mono.just(new IdUserData(idFriend))));
+    }
+
 }
