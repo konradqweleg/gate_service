@@ -2,10 +2,7 @@ package com.example.gate_mychat_server.adapter.in.rest;
 
 import com.example.gate_mychat_server.adapter.in.rest.util.ConvertToJSON;
 import com.example.gate_mychat_server.model.Role;
-import com.example.gate_mychat_server.model.request.ActiveAccountCodeData;
-import com.example.gate_mychat_server.model.request.IdUserData;
 import com.example.gate_mychat_server.model.request.LoginAndPasswordData;
-import com.example.gate_mychat_server.model.request.UserRegisterData;
 import com.example.gate_mychat_server.port.in.AuthenticationUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
