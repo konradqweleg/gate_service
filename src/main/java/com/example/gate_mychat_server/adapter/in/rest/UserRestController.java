@@ -61,4 +61,10 @@ public class UserRestController {
         return userUseCase.getUserAboutEmail(Mono.just(email)).flatMap(ConvertToJSON::convert);
     }
 
+    @GetMapping(value ="/getUsersMatchingNameSurname", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ACCESS_TOKEN')")
+    public Mono<ResponseEntity<String>> getUsersMatchingNameSurname(@RequestParam @Valid String patternName) {
+        return ConvertToJSON.convert( userUseCase.getUsersMatchingNameSurname(Mono.just(patternName)));
+    }
+
 }

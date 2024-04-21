@@ -1,21 +1,25 @@
 package com.example.gate_mychat_server.adapter.out.userServices;
 
 import com.example.gate_mychat_server.model.request.*;
+import com.example.gate_mychat_server.model.response.MessageResponse;
 import com.example.gate_mychat_server.model.response.Status;
 import com.example.gate_mychat_server.model.response.UserData;
 import com.example.gate_mychat_server.model.util.Result;
 import com.example.gate_mychat_server.port.out.UserPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 @Service
 public class UserRequest implements UserPort {
@@ -34,10 +38,14 @@ public class UserRequest implements UserPort {
 
     private final URI uriGetUserAboutEmail = new URI("http://localhost:8082/userServices/api/v1/user/getUserAboutEmail?email=");
 
+    private final URI uriGetUsersMatchingNameSurname = new URI("http://localhost:8082/userServices/api/v1/user/getUserMatchingNameAndSurname?patternName=");
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public UserRequest() throws URISyntaxException {
     }
+
+
 
 
     @Override
@@ -220,5 +228,28 @@ public class UserRequest implements UserPort {
         );
 
 
+    }
+
+    @Override
+    public Flux<UserData> getUsersMatchingNameSurname(Mono<String> patternNameMono) {
+        return patternNameMono.flatMapMany(patternName -> WebClient.create()
+                .get()
+                .uri(uriGetUsersMatchingNameSurname + patternName)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(
+                        HttpStatus.BAD_REQUEST::equals,
+                        response -> response.bodyToMono(String.class).map(Exception::new)
+                )
+                .bodyToFlux(String.class)
+                .flatMap(body -> {
+                    try {
+                        List<UserData> messageResponse = objectMapper.readValue(body, new TypeReference<List<UserData>>() {});
+                        return Flux.fromIterable(messageResponse);
+                    } catch (JsonProcessingException e) {
+                        return Flux.error(new RuntimeException(e));
+                    }
+                })
+                .onErrorResume(response -> Flux.error(new RuntimeException(response.getMessage()))));
     }
 }

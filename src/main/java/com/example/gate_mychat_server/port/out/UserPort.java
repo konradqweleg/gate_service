@@ -4,6 +4,7 @@ import com.example.gate_mychat_server.model.request.*;
 import com.example.gate_mychat_server.model.response.Status;
 import com.example.gate_mychat_server.model.response.UserData;
 import com.example.gate_mychat_server.model.util.Result;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface UserPort {
@@ -15,4 +16,6 @@ public interface UserPort {
      Mono<Result<Status>> checkIsCorrectResetPasswordCode(Mono<UserEmailAndCodeData> userEmailAndCodeDataMono);
      Mono<Result<Status>> changeUserPassword(Mono<ChangePasswordData> userEmailAndCodeAndPasswordMono);
      Mono<Result<UserData>> getUserAboutEmail(Mono<UserEmailData> idUserDataMono);
+
+     Flux<UserData> getUsersMatchingNameSurname(Mono<String> patternNameMono);
 }

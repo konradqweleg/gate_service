@@ -8,6 +8,7 @@ import com.example.gate_mychat_server.model.util.Result;
 import com.example.gate_mychat_server.port.in.UserUseCase;
 import com.example.gate_mychat_server.port.out.UserPort;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -133,5 +134,10 @@ public class UserService  implements UserUseCase {
                 }
         ).onErrorResume(
                 response -> Mono.just(Result.<UserData>error(response.getMessage())));
+    }
+
+    @Override
+    public Flux<UserData> getUsersMatchingNameSurname(Mono<String> patternNameMono) {
+        return userPort.getUsersMatchingNameSurname(patternNameMono);
     }
 }
