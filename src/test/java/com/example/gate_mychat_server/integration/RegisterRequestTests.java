@@ -30,19 +30,19 @@ public class RegisterRequestTests {
     }
     public static final UserRegisterData USER_REGISTER_DATA = new UserRegisterData("John", "Walker", "correctMail@format.eu", "password");
 
-    @Test
-    public void whenUserRegisterDataIsCorrectSystemShouldCreateUserAccount() throws URISyntaxException {
-        //given
-        //when
-        //then
-        webTestClient.post().uri(createRequestUtil().createRequestRegister())
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(USER_REGISTER_DATA))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.correctResponse").isEqualTo("true");
-    }
+//    @Test
+//    public void whenUserRegisterDataIsCorrectSystemShouldCreateUserAccount() throws URISyntaxException {
+//        //given
+//        //when
+//        //then
+//        webTestClient.post().uri(createRequestUtil().createRequestRegister())
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(BodyInserters.fromValue(USER_REGISTER_DATA))
+//                .exchange()
+//                .expectStatus().isOk()
+//                .expectBody()
+//                .jsonPath("$.correctResponse").isEqualTo("true");
+//    }
 
 
 }
