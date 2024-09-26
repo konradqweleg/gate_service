@@ -30,6 +30,16 @@ dependencies {
 
 	implementation 'com.auth0:java-jwt:4.3.0'
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
+
+	implementation group: 'org.keycloak', name: 'keycloak-admin-client', version: '23.0.6'
+	implementation group: 'org.keycloak', name: 'keycloak-adapter-core', version: '23.0.6'
+	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webflux-ui
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webflux-ui', version: '2.6.0'
+// https://mvnrepository.com/artifact/org.webjars/webjars-locator
+	implementation group: 'org.webjars', name: 'webjars-locator', version: '0.52'
+
+
 }
 
 tasks.named('test') {

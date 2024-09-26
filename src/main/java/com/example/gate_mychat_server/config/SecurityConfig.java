@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,13 +24,23 @@ public class SecurityConfig {
             "/api/v1/user/sendResetPasswordCode",
             "/api/v1/user/checkIsCorrectResetPasswordCode",
             "/api/v1/user/changeUserPassword",
-            "/api/v1/auth/login"
+            "/api/v1/user/validateToken",
+            "/api/v1/auth/login",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/webjars/swagger-ui/index.html",
+            "/webjars/swagger-ui/**"
+
+
     };
 
     private final TokenSecurityContextRepository securityContextRepository;
+    private final JwtAuthFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(TokenSecurityContextRepository securityContextRepository) {
+    public SecurityConfig(TokenSecurityContextRepository securityContextRepository, JwtAuthFilter jwtAuthenticationFilter) {
         this.securityContextRepository = securityContextRepository;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -40,16 +51,14 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
-
-                .formLogin().disable()
-
-                .httpBasic().disable()
-
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .securityContextRepository(securityContextRepository)
-
-                .authorizeExchange().pathMatchers(PUBLIC).permitAll().anyExchange().authenticated()
-
-                .and().build();
+                .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+                .authorizeExchange(exchange -> exchange
+                        .pathMatchers(PUBLIC).permitAll()
+                        .anyExchange().authenticated())
+                .build();
     }
 
 }
