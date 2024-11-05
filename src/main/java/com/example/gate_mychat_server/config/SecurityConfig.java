@@ -30,7 +30,8 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/webjars/swagger-ui/index.html",
-            "/webjars/swagger-ui/**"
+            "/webjars/swagger-ui/**",
+            "/v1/user/**"
 
 
     };
