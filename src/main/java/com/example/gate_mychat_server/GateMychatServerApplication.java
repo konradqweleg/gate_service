@@ -15,15 +15,10 @@ public class GateMychatServerApplication {
 
 	@Bean
 	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-//		return builder.routes()
-//				.route("user_service", r -> r.path("/v1/user**")
-//						.uri("https://stackoverflow.com/questions/71923443/spring-cloud-gateway-custom-404-error-message-when-route-is-not-found"))
-//				.build();
-
 		return builder.routes()
 				.route(p -> p
-						.path("/v1/user/test**")
-						.uri("http://localhost:8082/userServices/api/v1/user/test"))
+						.path("/api/v1/users/**")
+						.uri("http://localhost:8082")) //it redirects to v1/user/test
 				.build();
 	}
 

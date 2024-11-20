@@ -16,6 +16,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC = {
+            "/api/v1/users/register", //register
+            "/api/v1/user/test",
             "/api/v1/auth/email",
             "/api/auth/refreshAccessToken","/api/v1/user/register",
             "/api/v1/user/resendActiveUserAccountCode",
@@ -32,8 +34,6 @@ public class SecurityConfig {
             "/webjars/swagger-ui/index.html",
             "/webjars/swagger-ui/**",
             "/v1/user/**"
-
-
     };
 
     private final TokenSecurityContextRepository securityContextRepository;
