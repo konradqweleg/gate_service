@@ -20,7 +20,8 @@ public class SecurityConfig {
             "/api/v1/users/login", //login
             "/api/v1/user/test",
             "/api/v1/auth/email",
-            "/api/auth/refreshAccessToken","/api/v1/user/register",
+            "/api/auth/refreshAccessToken",
+            "/api/v1/user/register",
             "/api/v1/user/resendActiveUserAccountCode",
             "/api/v1/user/activeUserAccount",
             "/api/v1/user/checkIsUserWithThisEmailExist",

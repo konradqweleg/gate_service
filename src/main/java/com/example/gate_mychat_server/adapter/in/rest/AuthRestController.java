@@ -25,12 +25,7 @@ public class AuthRestController {
         this.authenticationUseCase = authenticationUseCase;
 
     }
-
-    @PostMapping("/login")
-    public Mono<ResponseEntity<String>> logIn(@RequestBody @Valid Mono<LoginAndPasswordData> user) {
-        return authenticationUseCase.login(user).flatMap(ConvertToJSON::convert);
-    }
-
+    
     @PostMapping("/refreshAccessToken")
     @PreAuthorize("hasAuthority('REFRESH_TOKEN')")
     public Mono<ResponseEntity<String>> refreshToken(Authentication authentication) {

@@ -54,3 +54,12 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+bootJar {
+    archiveFileName = 'mychat-gate-service.jar'
+}
+
+tasks.jar {
+    enabled = false
+}
+
