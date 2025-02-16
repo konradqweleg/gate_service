@@ -2,24 +2,25 @@ package com.example.gate_mychat_server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-@EnableWebFluxSecurity
+
 @Configuration
-@EnableReactiveMethodSecurity
+@EnableWebFluxSecurity
 public class SecurityConfig {
 
     private static final String[] PUBLIC = {
-            "/api/v1/users/register", //register
-            "/api/v1/users/login", //login
+            "/api/v1/users/register",
+            "/api/v1/users/login",
+            "/api/v1/users/refresh-token",
+
             "/api/v1/user/test",
             "/api/v1/auth/email",
+
             "/api/auth/refreshAccessToken",
             "/api/v1/user/register",
             "/api/v1/user/resendActiveUserAccountCode",
@@ -38,30 +39,26 @@ public class SecurityConfig {
             "/v1/user/**"
     };
 
-    private final TokenSecurityContextRepository securityContextRepository;
-    private final JwtAuthFilter jwtAuthenticationFilter;
-
-    public SecurityConfig(TokenSecurityContextRepository securityContextRepository, JwtAuthFilter jwtAuthenticationFilter) {
-        this.securityContextRepository = securityContextRepository;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-                .securityContextRepository(securityContextRepository)
-                .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-                .authorizeExchange(exchange -> exchange
+        return http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(PUBLIC).permitAll()
-                        .anyExchange().authenticated())
+                        .anyExchange().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+
+                .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec
+                        .authenticationEntryPoint((exchange, ex) -> {
+                            exchange.getResponse().setStatusCode(org.springframework.http.HttpStatus.UNAUTHORIZED);
+                            return exchange.getResponse().setComplete();
+                        })
+                )
+                .oauth2Login(Customizer.withDefaults())
                 .build();
+
     }
+
 
 }

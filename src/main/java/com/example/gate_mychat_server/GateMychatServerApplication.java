@@ -18,7 +18,7 @@ public class GateMychatServerApplication {
 		return builder.routes()
 				.route(p -> p
 						.path("/api/v1/users/**")
-						.uri("http://user-service:8082")) //it redirects to v1/user/test
+						.uri("http://user-service:8082"))
 				.build();
 	}
 
