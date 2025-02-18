@@ -15,6 +15,6 @@ WORKDIR /app
 
 COPY --from=build /app/build/libs/mychat-gate-service.jar mychat-gate-service.jar
 
-EXPOSE 8082
+EXPOSE 8083
 
 ENTRYPOINT ["java", "-jar", "mychat-gate-service.jar"]
