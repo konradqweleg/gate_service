@@ -13,8 +13,8 @@ FROM openjdk:17-jdk-slim AS runtime
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/mychat-gate-service.jar mychat-gate-service.jar
+COPY --from=build /app/build/libs/gate-service.jar gate-service.jar
 
 EXPOSE 8083
 
-ENTRYPOINT ["java", "-jar", "mychat-gate-service.jar"]
+ENTRYPOINT ["java", "-jar", "gate-service.jar"]

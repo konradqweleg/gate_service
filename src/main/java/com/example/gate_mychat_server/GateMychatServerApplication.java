@@ -21,10 +21,10 @@ public class GateMychatServerApplication {
 						.uri("http://user-service:8082"))
 				.route(p -> p
 						.path("/api/v1/messages/**")
-						.uri("http://message-service:8086"))
+						.uri("http://message-service:8084"))
 				.route(p -> p
 						.path("/api/v1/friends/**")
-						.uri("http://friend-service:8083"))
+						.uri("http://friend-service:8085"))
 
 				.build();
 	}
