@@ -16,5 +16,9 @@ WORKDIR /app
 COPY --from=build /app/build/libs/gate-service.jar gate-service.jar
 
 EXPOSE 8083
+RUN apt-get update && apt-get install -y curl
 
-ENTRYPOINT ["java", "-jar", "gate-service.jar"]
+COPY wait-for.sh /wait-for.sh
+RUN chmod +x /wait-for.sh
+
+ENTRYPOINT ["/wait-for.sh","java", "-jar", "gate-service.jar"]

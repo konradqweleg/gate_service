@@ -23,6 +23,7 @@ public class SecurityConfig {
 
             "/api/auth/refreshAccessToken",
             "/api/v1/user/register",
+            "/api/v1/users/activate",
             "/api/v1/user/resendActiveUserAccountCode",
             "/api/v1/user/activeUserAccount",
             "/api/v1/user/checkIsUserWithThisEmailExist",
